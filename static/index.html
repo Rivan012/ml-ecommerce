@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi Churn Pelanggan E-Commerce</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🛒 Prediksi Churn Pelanggan E-Commerce</h1>
+            <p class="subtitle">Sistem prediksi risiko pelanggan berhenti berlangganan berbasis Machine Learning</p>
+        </header>
+
+        <!-- Form Prediksi -->
+        <main class="main-content">
+            <form id="predict-form" novalidate>
+                <h2>📋 Data Pelanggan</h2>
+
+                <!-- Fieldset: Data Numerik -->
+                <fieldset class="form-section">
+                    <legend>Data Numerik</legend>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="age">Usia (Tahun)</label>
+                            <input type="number" id="age" name="age" min="18" max="100" step="1" placeholder="Contoh: 30" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tenure_months">Lama Berlangganan (Bulan)</label>
+                            <input type="number" id="tenure_months" name="tenure_months" min="0" max="120" step="1" placeholder="Contoh: 12" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="avg_order_value">Rata-rata Nilai Pesanan (USD)</label>
+                            <input type="number" id="avg_order_value" name="avg_order_value" min="0" max="10000" step="0.01" placeholder="Contoh: 150.50" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="total_orders">Total Pesanan</label>
+                            <input type="number" id="total_orders" name="total_orders" min="0" max="1000" step="1" placeholder="Contoh: 25" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="last_purchase_days_ago">Hari Sejak Pembelian Terakhir</label>
+                            <input type="number" id="last_purchase_days_ago" name="last_purchase_days_ago" min="0" max="730" step="1" placeholder="Contoh: 15" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="support_tickets">Jumlah Tiket Bantuan</label>
+                            <input type="number" id="support_tickets" name="support_tickets" min="0" max="50" step="1" placeholder="Contoh: 3" required>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Fieldset: Data Kategorikal -->
+                <fieldset class="form-section">
+                    <legend>Data Kategorikal</legend>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="gender">Jenis Kelamin</label>
+                            <select id="gender" name="gender" required>
+                                <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
+                                <option value="Female">Female</option>
+                                <option value="Male">Male</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city">Kota</label>
+                            <select id="city" name="city" required>
+                                <option value="" disabled selected>-- Pilih Kota --</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Hyderabad">Hyderabad</option>
+                                <option value="Kolkata">Kolkata</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Pune">Pune</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subscription_type">Tipe Langganan</label>
+                            <select id="subscription_type" name="subscription_type" required>
+                                <option value="" disabled selected>-- Pilih Tipe Langganan --</option>
+                                <option value="Basic">Basic</option>
+                                <option value="Silver">Silver</option>
+                                <option value="Gold">Gold</option>
+                                <option value="Platinum">Platinum</option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Tombol Submit -->
+                <div class="form-actions">
+                    <button type="submit" id="btn-predict">
+                        <span class="btn-text">🔍 Prediksi Risiko Churn</span>
+                        <span class="btn-loading" hidden>⏳ Memproses...</span>
+                    </button>
+                    <button type="reset" id="btn-reset">🔄 Reset Form</button>
+                </div>
+            </form>
+
+            <!-- Area Hasil Prediksi -->
+            <section id="result-section" class="result-section" hidden>
+                <h2>📊 Hasil Prediksi</h2>
+                <div id="result-card" class="result-card">
+                    <div class="result-icon" id="result-icon"></div>
+                    <div class="result-label" id="result-label"></div>
+                    <div class="result-probability">
+                        <span class="prob-label">Probabilitas Churn:</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progress-bar"></div>
+                        </div>
+                        <span class="prob-value" id="prob-value"></span>
+                    </div>
+                    <p class="result-description" id="result-description"></p>
+                </div>
+            </section>
+
+            <!-- Area Error -->
+            <section id="error-section" class="error-section" hidden>
+                <div class="error-card">
+                    <span class="error-icon">⚠️</span>
+                    <p class="error-message" id="error-message"></p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Disclaimer -->
+        <footer class="footer">
+            <div class="disclaimer">
+                <strong>⚠️ Disclaimer Akademik:</strong>
+                Sistem ini merupakan <strong>prototipe edukatif</strong> yang dikembangkan sebagai
+                bagian dari Tugas Besar Praktikum Pembelajaran Mesin (Machine Learning),
+                Program Studi S1 Sistem Informasi, Universitas Bengkulu.
+                Hasil prediksi bersifat eksperimental dan <strong>bukan</strong> penentu keputusan
+                profesional nyata. Tidak untuk digunakan sebagai dasar pengambilan keputusan bisnis.
+            </div>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
