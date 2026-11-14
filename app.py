@@ -1,6 +1,7 @@
 from collections import UserList
-from contextlib import asynccontextmanager
+import os
 from pathlib import Path
+import warnings
 import joblib
 import pandas as pd
 from pydantic import BaseModel
@@ -15,19 +16,13 @@ if not hasattr(sklearn.compose._column_transformer, "_RemainderColsList"):
         "_RemainderColsList", (UserList,), {}
     )
 
+warnings.filterwarnings("ignore")
+
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "model" / "model_ecommerce_churn.joblib"
-model = None
+model = joblib.load(MODEL_PATH)
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global model
-    model = joblib.load(MODEL_PATH)
-    yield
-
-
-app = FastAPI(title="E-Commerce Churn Prediction API", lifespan=lifespan)
+app = FastAPI(title="E-Commerce Churn Prediction API")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 
@@ -59,4 +54,6 @@ def predict(data: CustomerInput):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    port = int(os.getenv("PORT", 5000))
+    print(f"Server berjalan di: http://127.0.0.1:{port}")
+    uvicorn.run(app, host="127.0.0.1", port=port)
