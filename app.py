@@ -22,6 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "model" / "model_ecommerce_churn.joblib"
 model = joblib.load(MODEL_PATH)
 
+# ponytail: compatibility patch for SimpleImputer._fill_dtype across scikit-learn versions
+if hasattr(model, "named_steps") and "preprocessor" in model.named_steps:
+    preprocessor = model.named_steps["preprocessor"]
+    for attr in ("transformers_", "transformers"):
+        for item in getattr(preprocessor, attr, []):
+            transformer = item[1] if len(item) > 1 else None
+            if transformer is not None and hasattr(transformer, "named_steps"):
+                imputer = transformer.named_steps.get("imputer")
+                if imputer and not hasattr(imputer, "_fill_dtype"):
+                    imputer._fill_dtype = getattr(imputer, "_fit_dtype", None)
+
 app = FastAPI(title="E-Commerce Churn Prediction API")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
@@ -52,8 +63,14 @@ def predict(data: CustomerInput):
 
 
 if __name__ == "__main__":
+    import socket
     import uvicorn
 
-    port = int(os.getenv("PORT", 5000))
+    default_port = 8000
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        if s.connect_ex(("127.0.0.1", 8000)) == 0:
+            default_port = 5000
+
+    port = int(os.getenv("PORT", default_port))
     print(f"Server berjalan di: http://127.0.0.1:{port}")
     uvicorn.run(app, host="127.0.0.1", port=port)

@@ -91,9 +91,11 @@ function getFormData() {
 function displayResult(response) {
     // Sembunyikan error jika ada
     errorSection.hidden = true;
+    errorSection.setAttribute("hidden", "");
 
     // Tampilkan section hasil
     resultSection.hidden = false;
+    resultSection.removeAttribute("hidden");
 
     const prediction = response.prediction;
     const probability = response.probability;
@@ -148,7 +150,9 @@ function displayResult(response) {
 // ============================================
 function displayError(message) {
     resultSection.hidden = true;
+    resultSection.setAttribute("hidden", "");
     errorSection.hidden = false;
+    errorSection.removeAttribute("hidden");
     errorMessage.textContent = message;
 
     errorSection.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -183,7 +187,9 @@ form.addEventListener("submit", async function (e) {
     // Set loading state
     setLoading(true);
     errorSection.hidden = true;
+    errorSection.setAttribute("hidden", "");
     resultSection.hidden = true;
+    resultSection.setAttribute("hidden", "");
 
     try {
         // Kirim request ke backend menggunakan Fetch API
@@ -240,5 +246,7 @@ form.addEventListener("submit", async function (e) {
 form.addEventListener("reset", function () {
     // Sembunyikan hasil dan error saat form direset
     resultSection.hidden = true;
+    resultSection.setAttribute("hidden", "");
     errorSection.hidden = true;
+    errorSection.setAttribute("hidden", "");
 });

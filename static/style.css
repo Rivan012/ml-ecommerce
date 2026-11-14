@@ -9,6 +9,10 @@
     box-sizing: border-box;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 :root {
     --color-primary: #4f46e5;
     --color-primary-dark: #4338ca;
